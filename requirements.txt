@@ -1,0 +1,6 @@
+duckdb
+pandas
+pyarrow
+numpy
+scipy
+pyyaml

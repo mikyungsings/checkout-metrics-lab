@@ -1,0 +1,37 @@
+# A small metrics layer: each metric is defined once, here, and every
+# report or experiment readout builds its SQL from these definitions.
+# Grain: one row per checkout session (view `session_facts`).
+
+metrics:
+  checkout_conversion:
+    description: Share of checkout sessions that end in a successful charge.
+    numerator: count_if(charge_succeeded)
+    denominator: count(*)
+    owner: payments-analytics
+
+  payment_submit_rate:
+    description: Share of checkout sessions where the buyer submitted payment.
+    numerator: count_if(submitted_payment)
+    denominator: count(*)
+
+  authorization_rate:
+    description: Share of submitted payments that were not declined.
+    numerator: count_if(charge_succeeded)
+    denominator: count_if(submitted_payment)
+
+  refund_rate:
+    description: Share of successful charges that were later refunded.
+    numerator: count_if(refunded)
+    denominator: count_if(charge_succeeded)
+    guardrail: true
+
+  dispute_rate:
+    description: Share of successful charges that were later disputed.
+    numerator: count_if(disputed)
+    denominator: count_if(charge_succeeded)
+    guardrail: true
+
+  revenue_per_session_usd:
+    description: Successful charge volume (USD) per checkout session.
+    numerator: sum(case when charge_succeeded then amount_usd else 0 end)
+    denominator: count(*)
